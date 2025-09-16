@@ -3,7 +3,8 @@
 <head>
     <title>Simple Form</title>
 <style>
-body{border-style:solid;}
+body{border-style:solid;background-color:pink;}
+</style>
 </head>
 <body bgcolor:green>
     <h2>Contact Form</h2>
