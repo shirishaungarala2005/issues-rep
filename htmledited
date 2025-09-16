@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Simple Form</title>
+<style>
+body{border-style:solid;}
 </head>
 <body bgcolor:green>
     <h2>Contact Form</h2>
