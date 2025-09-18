@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Job App</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.6/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    // Mock data for jobs
+    const availableJobs = [
+      { id: 1, title: "Tutoring", description: "Math tutoring for high school students", pay: "$15/hr" },
+      { id: 2, title: "Delivery", description: "Food delivery on campus", pay: "$12/hr" },
+      { id: 3, title: "Freelance Coding", description: "Build simple websites", pay: "$20/hr" },
+    ];
+
+    // Main App Component
+    function App() {
+      const [user, setUser] = useState(null); // Current user
+      const [isWorker, setIsWorker] = useState(false); // Worker or Client
+      const [isLoggedIn, setIsLoggedIn] = useState(false); // Login state
+      const [selectedJobs, setSelectedJobs] = useState([]); // Worker's selected jobs
+      const [messages, setMessages] = useState([]); // Communication messages
+
+      // Handle Registration
+      const handleRegister = (email, password, role) => {
+        setUser({ email, role });
+        setIsWorker(role === "worker");
+        setIsLoggedIn(true);
+      };
+
+      // Handle Login
+      const handleLogin = (email, password) => {
+        setIsLoggedIn(true);
+      };
+
+      // Handle Job Selection for Workers
+      const handleJobSelect = (job) => {
+        if (!selectedJobs.includes(job)) {
+          setSelectedJobs([...selectedJobs, job]);
+        }
+      };
+
+      // Handle Client Messaging Worker
+      const handleSendMessage = (message) => {
+        setMessages([...messages, { sender: user.email, text: message, timestamp: new Date() }]);
+      };
+
+      // Registration Form
+      function RegisterForm() {
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [role, setRole] = useState("worker");
+
+        const submit = () => {
+          handleRegister(email, password, role);
+        };
+
+        return (
+          <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Register</h2>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            >
+              <option value="worker">Worker</option>
+              <option value="client">Client</option>
+            </select>
+            <button
+              onClick={submit}
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Register
+            </button>
+          </div>
+        );
+      }
+
+      // Login Form
+      function LoginForm() {
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+
+        const submit = () => {
+          handleLogin(email, password);
+        };
+
+        return (
+          <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Login</h2>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <button
+              onClick={submit}
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Login
+            </button>
+          </div>
+        );
+      }
+
+      // Worker Dashboard
+      function WorkerDashboard() {
+        return (
+          <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Available Jobs</h2>
+            {availableJobs.map((job) => (
+              <div key={job.id} className="mb-4 p-4 border rounded">
+                <h3 className="text-xl font-semibold">{job.title}</h3>
+                <p>{job.description}</p>
+                <p className="font-bold">{job.pay}</p>
+                <button
+                  onClick={() => handleJobSelect(job)}
+                  className="mt-2 bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                >
+                  Select Job
+                </button>
+              </div>
+            ))}
+            <h3 className="text-xl font-bold mt-6">Selected Jobs</h3>
+            {selectedJobs.length === 0 ? (
+              <p>No jobs selected.</p>
+            ) : (
+              selectedJobs.map((job) => (
+                <div key={job.id} className="mb-2 p-2 border rounded">
+                  <p>{job.title} - {job.pay}</p>
+                </div>
+              ))
+            )}
+          </div>
+        );
+      }
+
+      // Client Dashboard
+      function ClientDashboard() {
+        const [message, setMessage] = useState("");
+
+        const sendMessage = () => {
+          if (message.trim()) {
+            handleSendMessage(message);
+            setMessage("");
+          }
+        };
+
+        return (
+          <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Contact Workers</h2>
+            <div className="mb-4">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message to a worker..."
+                className="w-full p-2 border rounded"
+              />
+              <button
+                onClick={sendMessage}
+                className="mt-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+              >
+                Send Message
+              </button>
+            </div>
+            <h3 className="text-xl font-bold">Messages</h3>
+            {messages.length === 0 ? (
+              <p>No messages yet.</p>
+            ) : (
+              messages.map((msg, index) => (
+                <div key={index} className
